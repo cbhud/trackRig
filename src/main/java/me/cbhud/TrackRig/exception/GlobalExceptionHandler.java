@@ -181,6 +181,12 @@ public class GlobalExceptionHandler {
             return "Cannot delete this component because it is currently installed in a workstation. Move it to storage first.";
         }
 
+        // workstation.grid_x, grid_y UNIQUE violation
+        if (rootMessage.contains("uq_workstation_grid") ||
+           (rootMessage.contains("workstation") && rootMessage.contains("grid_x") && rootMessage.contains("grid_y"))) {
+            return "A workstation already exists at this grid position. Coordinates must be unique.";
+        }
+
         // Generic fallback for any other constraint not explicitly mapped
         return "A database constraint was violated. Please check your input and try again.";
     }

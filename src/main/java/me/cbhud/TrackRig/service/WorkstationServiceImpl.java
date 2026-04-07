@@ -4,6 +4,7 @@ import me.cbhud.TrackRig.dto.ComponentResponse;
 import me.cbhud.TrackRig.dto.MaintenanceStatusResponse;
 import me.cbhud.TrackRig.dto.WorkstationRequest;
 import me.cbhud.TrackRig.dto.WorkstationResponse;
+import me.cbhud.TrackRig.exception.DuplicateResourceException;
 import me.cbhud.TrackRig.exception.ResourceNotFoundException;
 import me.cbhud.TrackRig.model.Workstation;
 import me.cbhud.TrackRig.model.WorkstationStatus;
@@ -57,6 +58,10 @@ public class WorkstationServiceImpl implements WorkstationService {
     @Override
     @Transactional
     public WorkstationResponse createWorkstation(WorkstationRequest request) {
+        if (workstationRepository.existsByGridXAndGridY(request.getGridX(), request.getGridY())) {
+            throw new DuplicateResourceException("A workstation already exists at this grid position.");
+        }
+
         WorkstationStatus status = findStatusOrThrow(request.getStatusId());
 
         Workstation workstation = new Workstation();
@@ -72,6 +77,10 @@ public class WorkstationServiceImpl implements WorkstationService {
     @Override
     @Transactional
     public WorkstationResponse updateWorkstation(Integer id, WorkstationRequest request) {
+        if (workstationRepository.existsByGridXAndGridYAndIdNot(request.getGridX(), request.getGridY(), id)) {
+            throw new DuplicateResourceException("A workstation already exists at this grid position.");
+        }
+
         Workstation workstation = findWorkstationOrThrow(id);
         WorkstationStatus status = findStatusOrThrow(request.getStatusId());
 
@@ -114,6 +123,10 @@ public class WorkstationServiceImpl implements WorkstationService {
     @Override
     @Transactional
     public WorkstationResponse updateGridPosition(Integer workstationId, int gridX, int gridY) {
+        if (workstationRepository.existsByGridXAndGridYAndIdNot(gridX, gridY, workstationId)) {
+            throw new DuplicateResourceException("A workstation already exists at this grid position.");
+        }
+
         Workstation workstation = findWorkstationOrThrow(workstationId);
 
         workstation.setGridX(gridX);

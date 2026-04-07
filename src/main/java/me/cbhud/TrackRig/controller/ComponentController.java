@@ -3,10 +3,14 @@ package me.cbhud.TrackRig.controller;
 import jakarta.validation.Valid;
 import me.cbhud.TrackRig.dto.ComponentRequest;
 import me.cbhud.TrackRig.dto.ComponentResponse;
+import me.cbhud.TrackRig.dto.ImportResultResponse;
 import me.cbhud.TrackRig.service.ComponentService;
+import me.cbhud.TrackRig.service.ImportService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -16,9 +20,11 @@ import java.util.Map;
 public class ComponentController {
 
     private final ComponentService componentService;
+    private final ImportService importService;
 
-    public ComponentController(ComponentService componentService) {
+    public ComponentController(ComponentService componentService, ImportService importService) {
         this.componentService = componentService;
+        this.importService = importService;
     }
 
     // ========================
@@ -84,5 +90,36 @@ public class ComponentController {
     @PatchMapping("/{id}/storage")
     public ResponseEntity<ComponentResponse> moveToStorage(@PathVariable Integer id) {
         return ResponseEntity.ok(componentService.moveToStorage(id));
+    }
+
+    // ========================
+    // IMPORT ENDPOINT
+    // ========================
+
+    /**
+     * POST /api/components/import/excel
+     * Content-Type: multipart/form-data
+     * Param name: file
+     *
+     * Restricted to MANAGER or OWNER (enforced in ImportServiceImpl
+     * via @PreAuthorize).
+     *
+     * Expected column layout in the .xlsx file (row 1 = header, ignored):
+     * A: serialNumber
+     * B: name
+     * C: categoryName (resolved by name, case-insensitive)
+     * D: statusName (resolved by name, case-insensitive)
+     * E: workstationId (optional integer; leave blank for storage)
+     * F: purchaseDate (optional; format: yyyy-MM-dd)
+     * G: notes (optional)
+     *
+     * Returns 200 with ImportResultResponse:
+     * { "importedCount": 8, "errorCount": 2, "errors": [...] }
+     */
+    @PostMapping(value = "/import/excel", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ImportResultResponse> importFromExcel(
+            @RequestParam("file") MultipartFile file) {
+        ImportResultResponse result = importService.importComponentsFromExcel(file);
+        return ResponseEntity.ok(result);
     }
 }

@@ -9,4 +9,10 @@ public interface WorkstationRepository extends JpaRepository<Workstation, Intege
 
     // Filter workstations by their status (e.g., all "Out of Order" stations)
     List<Workstation> findByWorkstationStatusId(Integer statusId);
+
+    // Check if a workstation already exists at a specific grid position
+    boolean existsByGridXAndGridY(int gridX, int gridY);
+
+    // Check if another workstation exists at a specific grid position (used for updates)
+    boolean existsByGridXAndGridYAndIdNot(int gridX, int gridY, Integer id);
 }

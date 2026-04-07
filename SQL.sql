@@ -236,5 +236,9 @@ ALTER TABLE workstation
 ALTER TABLE maintenance_type 
     ADD CONSTRAINT uq_maintenance_type_name UNIQUE (name);
 
+-- 4. Osiguravanje jedinstvenih pozicija (koordinata)
+ALTER TABLE workstation
+    ADD CONSTRAINT uq_workstation_grid UNIQUE (grid_x, grid_y);
+
 
 

@@ -7,7 +7,9 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "workstation")
+@Table(name = "workstation", uniqueConstraints = {
+        @UniqueConstraint(name = "uq_workstation_grid", columnNames = {"grid_x", "grid_y"})
+})
 @Getter
 @Setter
 public class Workstation {
