@@ -1,5 +1,9 @@
 package me.cbhud.TrackRig.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import me.cbhud.TrackRig.service.ExportService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -13,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
  * OWNER)
  * since exporting is a READ operation.
  */
+@Tag(name = "Export", description = "Export workstations and components to Excel or PDF")
 @RestController
 public class ExportController {
 
@@ -29,20 +34,12 @@ public class ExportController {
     // WORKSTATION EXPORTS
     // ========================
 
-    /**
-     * GET /api/workstations/export/excel
-     *
-     * Query params:
-     * includeComponents (default: false) — add a Components sheet
-     * includeLogs (default: false) — add a Maintenance Logs sheet
-     *
-     * Example:
-     * GET /api/workstations/export/excel?includeComponents=true&includeLogs=true
-     */
+    @Operation(summary = "Export workstations to Excel", description = "Downloads a .xlsx file. Optionally include a Components sheet and/or Maintenance Logs sheet.")
+    @ApiResponse(responseCode = "200", description = "Excel file download")
     @GetMapping("/api/workstations/export/excel")
     public ResponseEntity<byte[]> exportWorkstationsExcel(
-            @RequestParam(defaultValue = "false") boolean includeComponents,
-            @RequestParam(defaultValue = "false") boolean includeLogs) {
+            @Parameter(description = "Include a Components sheet") @RequestParam(defaultValue = "false") boolean includeComponents,
+            @Parameter(description = "Include a Maintenance Logs sheet") @RequestParam(defaultValue = "false") boolean includeLogs) {
 
         byte[] bytes = exportService.exportWorkstationsToExcel(includeComponents, includeLogs);
         return ResponseEntity.ok()
@@ -52,20 +49,12 @@ public class ExportController {
                 .body(bytes);
     }
 
-    /**
-     * GET /api/workstations/export/pdf
-     *
-     * Query params:
-     * includeComponents (default: false) — add a components section
-     * includeLogs (default: false) — add a maintenance logs section
-     *
-     * Example:
-     * GET /api/workstations/export/pdf?includeComponents=true&includeLogs=true
-     */
+    @Operation(summary = "Export workstations to PDF", description = "Downloads a .pdf file. Optionally include a components section and/or maintenance logs section.")
+    @ApiResponse(responseCode = "200", description = "PDF file download")
     @GetMapping("/api/workstations/export/pdf")
     public ResponseEntity<byte[]> exportWorkstationsPdf(
-            @RequestParam(defaultValue = "false") boolean includeComponents,
-            @RequestParam(defaultValue = "false") boolean includeLogs) {
+            @Parameter(description = "Include a components section") @RequestParam(defaultValue = "false") boolean includeComponents,
+            @Parameter(description = "Include a maintenance logs section") @RequestParam(defaultValue = "false") boolean includeLogs) {
 
         byte[] bytes = exportService.exportWorkstationsToPdf(includeComponents, includeLogs);
         return ResponseEntity.ok()
@@ -79,28 +68,13 @@ public class ExportController {
     // COMPONENT EXPORTS
     // ========================
 
-    /**
-     * GET /api/components/export/excel
-     *
-     * All filter params are optional — omit any to include all values for that
-     * field.
-     *
-     * Query params:
-     * statusId — filter by component_status.id
-     * categoryId — filter by component_category.id
-     * inStorage — true = storage only | false = assigned only | omit = all
-     *
-     * Examples:
-     * GET /api/components/export/excel → all components
-     * GET /api/components/export/excel?statusId=1 → status filter only
-     * GET /api/components/export/excel?categoryId=2&inStorage=true → category +
-     * storage only
-     */
+    @Operation(summary = "Export components to Excel", description = "Downloads a .xlsx file. All filter params are optional.")
+    @ApiResponse(responseCode = "200", description = "Excel file download")
     @GetMapping("/api/components/export/excel")
     public ResponseEntity<byte[]> exportComponentsExcel(
-            @RequestParam(required = false) Integer statusId,
-            @RequestParam(required = false) Integer categoryId,
-            @RequestParam(required = false) Boolean inStorage) {
+            @Parameter(description = "Filter by component status ID") @RequestParam(required = false) Integer statusId,
+            @Parameter(description = "Filter by component category ID") @RequestParam(required = false) Integer categoryId,
+            @Parameter(description = "true = storage only, false = assigned only, omit = all") @RequestParam(required = false) Boolean inStorage) {
 
         byte[] bytes = exportService.exportComponentsToExcel(statusId, categoryId, inStorage);
         return ResponseEntity.ok()
@@ -110,21 +84,13 @@ public class ExportController {
                 .body(bytes);
     }
 
-    /**
-     * GET /api/components/export/pdf
-     *
-     * Same filter params as the Excel variant.
-     *
-     * Examples:
-     * GET /api/components/export/pdf → all components
-     * GET /api/components/export/pdf?statusId=2 → damaged components only
-     * GET /api/components/export/pdf?inStorage=false → assigned components only
-     */
+    @Operation(summary = "Export components to PDF", description = "Downloads a .pdf file. Same filter params as the Excel variant.")
+    @ApiResponse(responseCode = "200", description = "PDF file download")
     @GetMapping("/api/components/export/pdf")
     public ResponseEntity<byte[]> exportComponentsPdf(
-            @RequestParam(required = false) Integer statusId,
-            @RequestParam(required = false) Integer categoryId,
-            @RequestParam(required = false) Boolean inStorage) {
+            @Parameter(description = "Filter by component status ID") @RequestParam(required = false) Integer statusId,
+            @Parameter(description = "Filter by component category ID") @RequestParam(required = false) Integer categoryId,
+            @Parameter(description = "true = storage only, false = assigned only, omit = all") @RequestParam(required = false) Boolean inStorage) {
 
         byte[] bytes = exportService.exportComponentsToPdf(statusId, categoryId, inStorage);
         return ResponseEntity.ok()

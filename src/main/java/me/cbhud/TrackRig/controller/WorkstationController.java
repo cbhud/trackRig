@@ -1,5 +1,10 @@
 package me.cbhud.TrackRig.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import me.cbhud.TrackRig.dto.ComponentResponse;
 import me.cbhud.TrackRig.dto.MaintenanceStatusResponse;
@@ -13,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+@Tag(name = "Workstations", description = "CRUD and business operations for workstations")
 @RestController
 @RequestMapping("/api/workstations")
 public class WorkstationController {
@@ -23,14 +29,11 @@ public class WorkstationController {
         this.workstationService = workstationService;
     }
 
-    // GET /api/workstations
-    // Returns all workstations. Optionally filter by statusId query param.
-    // Examples:
-    // GET /api/workstations → all workstations
-    // GET /api/workstations?statusId=3 → only "Out of Order" workstations
+    @Operation(summary = "Get all workstations", description = "Returns all workstations. Optionally filter by statusId (e.g. statusId=3 for Out of Order).")
+    @ApiResponse(responseCode = "200", description = "List of workstations")
     @GetMapping
     public ResponseEntity<List<WorkstationResponse>> getAllWorkstations(
-            @RequestParam(required = false) Integer statusId) {
+            @Parameter(description = "Filter by workstation status ID") @RequestParam(required = false) Integer statusId) {
         List<WorkstationResponse> workstations;
 
         if (statusId != null) {
@@ -42,14 +45,22 @@ public class WorkstationController {
         return ResponseEntity.ok(workstations);
     }
 
-    // GET /api/workstations/{id}
+    @Operation(summary = "Get workstation by ID")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Workstation found"),
+        @ApiResponse(responseCode = "404", description = "Workstation not found")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<WorkstationResponse> getWorkstationById(@PathVariable Integer id) {
         return ResponseEntity.ok(workstationService.getWorkstationById(id));
     }
 
-    // POST /api/workstations
-    // Request body: { "name": "Station-D1", "statusId": 1, "gridX": 0, "gridY": 3 }
+    @Operation(summary = "Create workstation", description = "Body: { \"name\": \"Station-D1\", \"statusId\": 1, \"gridX\": 0, \"gridY\": 3 }")
+    @ApiResponses({
+        @ApiResponse(responseCode = "201", description = "Workstation created"),
+        @ApiResponse(responseCode = "400", description = "Validation error"),
+        @ApiResponse(responseCode = "409", description = "Duplicate workstation name")
+    })
     @PostMapping
     public ResponseEntity<WorkstationResponse> createWorkstation(
             @RequestBody @Valid WorkstationRequest request) {
@@ -57,8 +68,11 @@ public class WorkstationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
-    // PUT /api/workstations/{id}
-    // Full update — all fields must be provided
+    @Operation(summary = "Update workstation", description = "Full update — all fields must be provided.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Workstation updated"),
+        @ApiResponse(responseCode = "404", description = "Workstation not found")
+    })
     @PutMapping("/{id}")
     public ResponseEntity<WorkstationResponse> updateWorkstation(
             @PathVariable Integer id,
@@ -66,8 +80,12 @@ public class WorkstationController {
         return ResponseEntity.ok(workstationService.updateWorkstation(id, request));
     }
 
-    // DELETE /api/workstations/{id}
-    // Restricted to MANAGER or OWNER (enforced in service via @PreAuthorize)
+    @Operation(summary = "Delete workstation", description = "Restricted to MANAGER or OWNER.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "204", description = "Workstation deleted"),
+        @ApiResponse(responseCode = "403", description = "Insufficient permissions"),
+        @ApiResponse(responseCode = "404", description = "Workstation not found")
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteWorkstation(@PathVariable Integer id) {
         workstationService.deleteWorkstation(id);
@@ -78,13 +96,11 @@ public class WorkstationController {
     // BUSINESS LOGIC ENDPOINTS
     // ========================
 
-    // PATCH /api/workstations/{id}/status
-    // Partial update — only changes the status.
-    // Request body: { "statusId": 2 }
-    //
-    // Why PATCH instead of PUT?
-    // PUT = full resource replacement (all fields required)
-    // PATCH = partial update (only the fields being changed)
+    @Operation(summary = "Update workstation status", description = "Partial update — only changes the status. Body: { \"statusId\": 2 }")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Status updated"),
+        @ApiResponse(responseCode = "404", description = "Workstation not found")
+    })
     @PatchMapping("/{id}/status")
     public ResponseEntity<WorkstationResponse> updateStatus(
             @PathVariable Integer id,
@@ -93,9 +109,8 @@ public class WorkstationController {
         return ResponseEntity.ok(workstationService.updateStatus(id, statusId));
     }
 
-    // PATCH /api/workstations/{id}/position
-    // Partial update — only changes grid position (for floor map drag-and-drop).
-    // Request body: { "gridX": 2, "gridY": 1 }
+    @Operation(summary = "Update workstation grid position", description = "Partial update for floor map drag-and-drop. Body: { \"gridX\": 2, \"gridY\": 1 }")
+    @ApiResponse(responseCode = "200", description = "Position updated")
     @PatchMapping("/{id}/position")
     public ResponseEntity<WorkstationResponse> updateGridPosition(
             @PathVariable Integer id,
@@ -105,17 +120,15 @@ public class WorkstationController {
         return ResponseEntity.ok(workstationService.updateGridPosition(id, gridX, gridY));
     }
 
-    // GET /api/workstations/{id}/components
-    // Returns all components installed in this workstation.
+    @Operation(summary = "Get components for a workstation", description = "Returns all components installed in this workstation.")
+    @ApiResponse(responseCode = "200", description = "List of components")
     @GetMapping("/{id}/components")
     public ResponseEntity<List<ComponentResponse>> getComponents(@PathVariable Integer id) {
         return ResponseEntity.ok(workstationService.getComponentsByWorkstationId(id));
     }
 
-    // GET /api/workstations/{id}/maintenance-status
-    // Returns computed maintenance status for each active maintenance type.
-    // Response includes: status (OK/DUE_SOON/OVERDUE/NEVER_DONE), nextDueDate,
-    // lastPerformed
+    @Operation(summary = "Get maintenance status for a workstation", description = "Returns computed maintenance status for each active maintenance type. Status values: OK, DUE_SOON, OVERDUE, NEVER_DONE.")
+    @ApiResponse(responseCode = "200", description = "Maintenance status list")
     @GetMapping("/{id}/maintenance-status")
     public ResponseEntity<List<MaintenanceStatusResponse>> getMaintenanceStatus(
             @PathVariable Integer id) {

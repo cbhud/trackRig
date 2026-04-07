@@ -1,5 +1,10 @@
 package me.cbhud.TrackRig.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import me.cbhud.TrackRig.dto.ComponentRequest;
 import me.cbhud.TrackRig.dto.ComponentResponse;
@@ -15,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Map;
 
+@Tag(name = "Components", description = "CRUD, assignment, storage, and import operations for components")
 @RestController
 @RequestMapping("/api/components")
 public class ComponentController {
@@ -31,19 +37,29 @@ public class ComponentController {
     // CRUD ENDPOINTS
     // ========================
 
-    // GET /api/components
+    @Operation(summary = "Get all components")
+    @ApiResponse(responseCode = "200", description = "List of all components")
     @GetMapping
     public ResponseEntity<List<ComponentResponse>> getAllComponents() {
         return ResponseEntity.ok(componentService.getAllComponents());
     }
 
-    // GET /api/components/{id}
+    @Operation(summary = "Get component by ID")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Component found"),
+        @ApiResponse(responseCode = "404", description = "Component not found")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<ComponentResponse> getComponentById(@PathVariable Integer id) {
         return ResponseEntity.ok(componentService.getComponentById(id));
     }
 
-    // POST /api/components — restricted to MANAGER or OWNER (enforced in service)
+    @Operation(summary = "Create component", description = "Restricted to MANAGER or OWNER.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "201", description = "Component created"),
+        @ApiResponse(responseCode = "400", description = "Validation error"),
+        @ApiResponse(responseCode = "403", description = "Insufficient permissions")
+    })
     @PostMapping
     public ResponseEntity<ComponentResponse> createComponent(
             @RequestBody @Valid ComponentRequest request) {
@@ -51,7 +67,11 @@ public class ComponentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
-    // PUT /api/components/{id}
+    @Operation(summary = "Update component", description = "Full update — all fields must be provided.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Component updated"),
+        @ApiResponse(responseCode = "404", description = "Component not found")
+    })
     @PutMapping("/{id}")
     public ResponseEntity<ComponentResponse> updateComponent(
             @PathVariable Integer id,
@@ -59,7 +79,12 @@ public class ComponentController {
         return ResponseEntity.ok(componentService.updateComponent(id, request));
     }
 
-    // DELETE /api/components/{id} — restricted to OWNER only (enforced in service)
+    @Operation(summary = "Delete component", description = "Restricted to OWNER only.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "204", description = "Component deleted"),
+        @ApiResponse(responseCode = "403", description = "Insufficient permissions"),
+        @ApiResponse(responseCode = "404", description = "Component not found")
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteComponent(@PathVariable Integer id) {
         componentService.deleteComponent(id);
@@ -70,14 +95,18 @@ public class ComponentController {
     // BUSINESS LOGIC ENDPOINTS
     // ========================
 
-    // GET /api/components/storage — all components not assigned to a workstation
+    @Operation(summary = "Get components in storage", description = "Returns all components not currently assigned to a workstation.")
+    @ApiResponse(responseCode = "200", description = "List of components in storage")
     @GetMapping("/storage")
     public ResponseEntity<List<ComponentResponse>> getComponentsInStorage() {
         return ResponseEntity.ok(componentService.getComponentsInStorage());
     }
 
-    // PATCH /api/components/{id}/assign — assign component to a workstation
-    // Body: { "workstationId": 5 }
+    @Operation(summary = "Assign component to workstation", description = "Body: { \"workstationId\": 5 }")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Component assigned"),
+        @ApiResponse(responseCode = "404", description = "Component or workstation not found")
+    })
     @PatchMapping("/{id}/assign")
     public ResponseEntity<ComponentResponse> assignToWorkstation(
             @PathVariable Integer id,
@@ -86,7 +115,8 @@ public class ComponentController {
         return ResponseEntity.ok(componentService.assignToWorkstation(id, workstationId));
     }
 
-    // PATCH /api/components/{id}/storage — move component back to storage
+    @Operation(summary = "Move component to storage", description = "Unassigns the component from its workstation and moves it back to storage.")
+    @ApiResponse(responseCode = "200", description = "Component moved to storage")
     @PatchMapping("/{id}/storage")
     public ResponseEntity<ComponentResponse> moveToStorage(@PathVariable Integer id) {
         return ResponseEntity.ok(componentService.moveToStorage(id));
@@ -96,29 +126,28 @@ public class ComponentController {
     // IMPORT ENDPOINT
     // ========================
 
-    /**
-     * POST /api/components/import/excel
-     * Content-Type: multipart/form-data
-     * Param name: file
-     *
-     * Restricted to MANAGER or OWNER (enforced in ImportServiceImpl
-     * via @PreAuthorize).
-     *
-     * Expected column layout in the .xlsx file (row 1 = header, ignored):
-     * A: serialNumber
-     * B: name
-     * C: categoryName (resolved by name, case-insensitive)
-     * D: statusName (resolved by name, case-insensitive)
-     * E: workstationId (optional integer; leave blank for storage)
-     * F: purchaseDate (optional; format: yyyy-MM-dd)
-     * G: notes (optional)
-     *
-     * Returns 200 with ImportResultResponse:
-     * { "importedCount": 8, "errorCount": 2, "errors": [...] }
-     */
+    @Operation(
+        summary = "Import components from Excel",
+        description = """
+            Upload a .xlsx file to bulk-import components. Restricted to MANAGER or OWNER.
+
+            Expected column layout (row 1 = header, ignored):
+            - A: serialNumber
+            - B: name
+            - C: categoryName (case-insensitive)
+            - D: statusName (case-insensitive)
+            - E: workstationId (optional integer; blank = storage)
+            - F: purchaseDate (optional; format: yyyy-MM-dd)
+            - G: notes (optional)
+            """
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Import completed — check importedCount and errors in response"),
+        @ApiResponse(responseCode = "403", description = "Insufficient permissions")
+    })
     @PostMapping(value = "/import/excel", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ImportResultResponse> importFromExcel(
-            @RequestParam("file") MultipartFile file) {
+            @Parameter(description = "Excel (.xlsx) file to import") @RequestParam("file") MultipartFile file) {
         ImportResultResponse result = importService.importComponentsFromExcel(file);
         return ResponseEntity.ok(result);
     }
