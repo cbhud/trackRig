@@ -38,12 +38,19 @@ public class AppUser {
     @Column(name = "full_name")
     private String fullName;
 
-    @Column(name = "created_at", insertable = false, updatable = false, nullable = false)
-    @Generated(event = EventType.INSERT)
+    @Column(name = "created_at", updatable = false, nullable = false)
     private OffsetDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
+
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null) {
+            createdAt = OffsetDateTime.now();
+        }
+    }
 
 }
