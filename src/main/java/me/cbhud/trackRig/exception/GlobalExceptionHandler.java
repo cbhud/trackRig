@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -24,9 +24,18 @@ public class GlobalExceptionHandler {
         ApiErrorResponse response = new ApiErrorResponse(
                 HttpStatus.CONFLICT.name(),
                 exc.getMessage(),
-                LocalDateTime.now()
+                OffsetDateTime.now()
         );
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
 
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    public ResponseEntity<ApiErrorResponse> handleResourceAlreadyExists(ResourceAlreadyExistsException exc) {
+        ApiErrorResponse response = new ApiErrorResponse(
+                HttpStatus.CONFLICT.name(),
+                exc.getMessage(),
+                OffsetDateTime.now()
+        );
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 
@@ -41,10 +50,20 @@ public class GlobalExceptionHandler {
         ApiErrorResponse response = new ApiErrorResponse(
                 HttpStatus.BAD_REQUEST.name(),
                 "Validation failed",
-                LocalDateTime.now(),
+                OffsetDateTime.now(),
                 fieldErrors
         );
 
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiErrorResponse> handleIllegalArgument(IllegalArgumentException exc) {
+        ApiErrorResponse response = new ApiErrorResponse(
+                HttpStatus.BAD_REQUEST.name(),
+                exc.getMessage(),
+                OffsetDateTime.now()
+        );
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
@@ -55,7 +74,7 @@ public class GlobalExceptionHandler {
         ApiErrorResponse response = new ApiErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.name(),
                 "Something went wrong",
-                LocalDateTime.now()
+                OffsetDateTime.now()
         );
 
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -66,7 +85,7 @@ public class GlobalExceptionHandler {
         ApiErrorResponse response = new ApiErrorResponse(
                 HttpStatus.UNAUTHORIZED.name(),
                 "Invalid username or password",
-                LocalDateTime.now()
+                OffsetDateTime.now()
         );
 
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
@@ -79,7 +98,7 @@ public class GlobalExceptionHandler {
         ApiErrorResponse response = new ApiErrorResponse(
                 HttpStatus.METHOD_NOT_ALLOWED.name(),
                 "Request method is not supported for this endpoint",
-                LocalDateTime.now()
+                OffsetDateTime.now()
         );
 
         return new ResponseEntity<>(response, HttpStatus.METHOD_NOT_ALLOWED);
@@ -89,8 +108,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiErrorResponse> handleDuplicateEntry(DataIntegrityViolationException exc) {
         ApiErrorResponse response = new ApiErrorResponse(
                 HttpStatus.CONFLICT.name(),
-                "A user with that username or email already exists",
-                LocalDateTime.now()
+                "A record with that value already exists",
+                OffsetDateTime.now()
         );
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
@@ -100,7 +119,18 @@ public class GlobalExceptionHandler {
         ApiErrorResponse response = new ApiErrorResponse(
                 HttpStatus.NOT_FOUND.name(),
                 exc.getMessage(),
-                LocalDateTime.now()
+                OffsetDateTime.now()
+        );
+
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleResourceNotFound(ResourceNotFoundException exc) {
+        ApiErrorResponse response = new ApiErrorResponse(
+                HttpStatus.NOT_FOUND.name(),
+                exc.getMessage(),
+                OffsetDateTime.now()
         );
 
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
@@ -111,10 +141,10 @@ public class GlobalExceptionHandler {
         ApiErrorResponse response = new ApiErrorResponse(
                 HttpStatus.FORBIDDEN.name(),
                 exc.getMessage(),
-                LocalDateTime.now()
+                OffsetDateTime.now()
         );
 
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 
-}
+}
