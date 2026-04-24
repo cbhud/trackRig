@@ -1,3 +1,6 @@
+<p align="center">
+  <img src="img/trackrig-banner.png" alt="TrackRig Banner" width="100%">
+</p>
 # TrackRig
 
 TrackRig is a web-based workstation and component tracking system built for places such as factories, internet cafés, computer labs, or workshops. It helps users organize workstations, track physical components, manage assignments, and monitor maintenance tasks.
