@@ -1,7 +1,12 @@
 package me.cbhud.trackRig.controller;
 
 import jakarta.validation.Valid;
-import me.cbhud.trackRig.dto.*;
+import me.cbhud.trackRig.dto.request.AdminUpdateUserRequest;
+import me.cbhud.trackRig.dto.request.ChangePasswordRequest;
+import me.cbhud.trackRig.dto.request.UpdateMyProfileRequest;
+import me.cbhud.trackRig.dto.response.AdminUserResponse;
+import me.cbhud.trackRig.dto.response.UpdateMyProfileResponse;
+import me.cbhud.trackRig.dto.response.UserResponse;
 import me.cbhud.trackRig.security.SecurityUser;
 import me.cbhud.trackRig.service.AppUserService;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package me.cbhud.trackRig.dto;
+package me.cbhud.trackRig.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import me.cbhud.trackRig.model.Role;

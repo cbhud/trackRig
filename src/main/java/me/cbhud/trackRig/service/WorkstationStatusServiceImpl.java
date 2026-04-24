@@ -1,6 +1,8 @@
 package me.cbhud.trackRig.service;
 
-import me.cbhud.trackRig.dto.*;
+import me.cbhud.trackRig.dto.request.WorkstationStatusRequest;
+import me.cbhud.trackRig.dto.request.WorkstationStatusUpdateRequest;
+import me.cbhud.trackRig.dto.response.WorkstationStatusResponse;
 import me.cbhud.trackRig.exception.ResourceAlreadyExistsException;
 import me.cbhud.trackRig.exception.ResourceNotFoundException;
 import me.cbhud.trackRig.model.WorkstationStatus;

@@ -1,7 +1,10 @@
 package me.cbhud.trackRig.service;
 
 import jakarta.transaction.Transactional;
-import me.cbhud.trackRig.dto.*;
+import me.cbhud.trackRig.dto.request.LoginRequest;
+import me.cbhud.trackRig.dto.request.RegisterRequest;
+import me.cbhud.trackRig.dto.response.AuthResponse;
+import me.cbhud.trackRig.dto.response.RegisterResponse;
 import me.cbhud.trackRig.exception.UserAlreadyExistsException;
 import me.cbhud.trackRig.model.AppUser;
 import me.cbhud.trackRig.model.Role;

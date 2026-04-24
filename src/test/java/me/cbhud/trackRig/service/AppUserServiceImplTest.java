@@ -1,6 +1,11 @@
 package me.cbhud.trackRig.service;
 
-import me.cbhud.trackRig.dto.*;
+import me.cbhud.trackRig.dto.request.AdminUpdateUserRequest;
+import me.cbhud.trackRig.dto.request.ChangePasswordRequest;
+import me.cbhud.trackRig.dto.request.UpdateMyProfileRequest;
+import me.cbhud.trackRig.dto.response.AdminUserResponse;
+import me.cbhud.trackRig.dto.response.UpdateMyProfileResponse;
+import me.cbhud.trackRig.dto.response.UserResponse;
 import me.cbhud.trackRig.exception.UserAlreadyExistsException;
 import me.cbhud.trackRig.exception.UserNotFoundException;
 import me.cbhud.trackRig.model.AppUser;

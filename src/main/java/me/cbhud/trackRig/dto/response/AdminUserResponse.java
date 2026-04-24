@@ -1,4 +1,4 @@
-package me.cbhud.trackRig.dto;
+package me.cbhud.trackRig.dto.response;
 
 import me.cbhud.trackRig.model.AppUser;
 import me.cbhud.trackRig.model.Role;

@@ -1,8 +1,8 @@
 package me.cbhud.trackRig.controller;
 
 import tools.jackson.databind.ObjectMapper;
-import me.cbhud.trackRig.dto.LoginRequest;
-import me.cbhud.trackRig.dto.RegisterRequest;
+import me.cbhud.trackRig.dto.request.LoginRequest;
+import me.cbhud.trackRig.dto.request.RegisterRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

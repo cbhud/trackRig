@@ -1,10 +1,10 @@
 package me.cbhud.trackRig.controller;
 
 import jakarta.validation.Valid;
-import me.cbhud.trackRig.dto.AuthResponse;
-import me.cbhud.trackRig.dto.LoginRequest;
-import me.cbhud.trackRig.dto.RegisterRequest;
-import me.cbhud.trackRig.dto.RegisterResponse;
+import me.cbhud.trackRig.dto.response.AuthResponse;
+import me.cbhud.trackRig.dto.request.LoginRequest;
+import me.cbhud.trackRig.dto.request.RegisterRequest;
+import me.cbhud.trackRig.dto.response.RegisterResponse;
 import me.cbhud.trackRig.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

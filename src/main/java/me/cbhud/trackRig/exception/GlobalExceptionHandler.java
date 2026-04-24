@@ -1,6 +1,6 @@
 package me.cbhud.trackRig.exception;
 
-import me.cbhud.trackRig.dto.ApiErrorResponse;
+import me.cbhud.trackRig.dto.response.ApiErrorResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -147,4 +147,4 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 
-}
+}

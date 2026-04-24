@@ -1,4 +1,4 @@
-package me.cbhud.trackRig.dto;
+package me.cbhud.trackRig.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

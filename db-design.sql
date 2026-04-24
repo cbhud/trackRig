@@ -58,25 +58,14 @@ CREATE TABLE component_status (
 CREATE TABLE component (
     id SERIAL PRIMARY KEY,
 
-    -- Your own internal label, very useful in UI/admin
-    asset_tag VARCHAR(50) NOT NULL UNIQUE,
-
     -- Manufacturer serial is optional and NOT unique
     serial_number VARCHAR(100),
 
     name VARCHAR(200) NOT NULL,
-    brand VARCHAR(100),
-    model VARCHAR(100),
-
+    notes TEXT,
     category_id INT NOT NULL REFERENCES component_category(id),
     status_id INT NOT NULL REFERENCES component_status(id),
-
-    -- Current assignment
     workstation_id INT REFERENCES workstation(id) ON DELETE SET NULL,
-
-    purchase_date DATE,
-    warranty_expiry DATE,
-    notes TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 

@@ -1,7 +1,8 @@
 package me.cbhud.trackRig.service;
 
-import me.cbhud.trackRig.dto.*;
-import me.cbhud.trackRig.model.WorkstationStatus;
+import me.cbhud.trackRig.dto.request.WorkstationStatusRequest;
+import me.cbhud.trackRig.dto.request.WorkstationStatusUpdateRequest;
+import me.cbhud.trackRig.dto.response.WorkstationStatusResponse;
 
 import java.util.List;
 

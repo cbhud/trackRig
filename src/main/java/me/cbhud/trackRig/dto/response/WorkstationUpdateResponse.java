@@ -1,6 +1,5 @@
-package me.cbhud.trackRig.dto;
+package me.cbhud.trackRig.dto.response;
 
-import jakarta.validation.constraints.Size;
 import me.cbhud.trackRig.model.Workstation;
 
 public record WorkstationUpdateResponse(

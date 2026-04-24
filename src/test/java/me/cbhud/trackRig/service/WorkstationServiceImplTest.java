@@ -1,7 +1,7 @@
 package me.cbhud.trackRig.service;
 
-import me.cbhud.trackRig.dto.WorkstationRequest;
-import me.cbhud.trackRig.dto.WorkstationResponse;
+import me.cbhud.trackRig.dto.request.WorkstationRequest;
+import me.cbhud.trackRig.dto.response.WorkstationResponse;
 import me.cbhud.trackRig.model.Workstation;
 import me.cbhud.trackRig.model.WorkstationStatus;
 import me.cbhud.trackRig.repository.WorkstationRepository;
