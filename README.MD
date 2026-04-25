@@ -1,11 +1,10 @@
 <p align="center">
   <img src="img/banner.png" alt="TrackRig Banner" width="100%">
 </p>
-# TrackRig
 
-TrackRig is a web-based workstation and component tracking system built for places such as factories, internet cafés, computer labs, or workshops. It helps users organize workstations, track physical components, manage assignments, and monitor maintenance tasks.
+TrackRig is a web-based workstation and hardware tracking system designed for environments with many managed computers, such as offices, factories, internet cafés, computer labs, and workshops. It helps IT teams organize workstations, track physical components, manage assignments, and monitor maintenance tasks from one central place.
 
-The goal of the project is to make equipment management easier by keeping all workstation, component, assignment, and maintenance data in one system.
+The project was built to simplify equipment management by keeping workstation, component, assignment, and maintenance data in a single system. It was developed using Vue for the frontend, Spring Boot for the backend API and security layer, and PostgreSQL for data storage. The application was successfully deployed on my own VPS using Docker for containerization and Nginx for serving the frontend and reverse proxying the backend.
 
 ---
 
